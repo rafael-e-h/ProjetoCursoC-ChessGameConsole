@@ -20,7 +20,7 @@ namespace xadrez_console
             tab.colocarPeca(new Torre(tab, Cor.Preta), new Posicao(0, 7));
             tab.colocarPeca(new Rei(tab, Cor.Preta), new Posicao(0, 4));
 
-            Tela.imprimirTabuleiro(tab);
+            Tela.imprimirTabuleiro(tab);              
 
             }
             catch (TabuleiroException e) {

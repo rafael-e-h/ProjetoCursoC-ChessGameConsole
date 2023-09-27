@@ -22,6 +22,11 @@ namespace ChessConsoleGame.tabuleiro
 
         }
 
+        public void incrementarQteMovimentos()
+        {
+            qteMovimentos++;
+        }
+
 
     }
 }

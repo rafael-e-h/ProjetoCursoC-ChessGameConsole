@@ -1,9 +1,12 @@
 ﻿using ChessConsoleGame.tabuleiro;
+using ChessConsoleGame.xadrez;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace ChessConsoleGame
 {
@@ -11,10 +14,13 @@ namespace ChessConsoleGame
     {
         public static void imprimirTabuleiro(Tabuleiro tab)
         {
+            ConsoleColor color_defaultforeground = System.Console.ForegroundColor;
+            ConsoleColor color_defaultbackground = System.Console.BackgroundColor;
+
             for (int i = 0; i < tab.linhas; i++)
             {
-                Console.BackgroundColor = System.ConsoleColor.Gray;
-                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.BackgroundColor = System.ConsoleColor.DarkGray;
+                Console.ForegroundColor = ConsoleColor.Yellow;
 
                 Console.Write(8 - i + " ");
                 for (int j = 0; j < tab.colunas; j++)
@@ -33,12 +39,22 @@ namespace ChessConsoleGame
                 Console.WriteLine();
             }
 
-            Console.BackgroundColor = System.ConsoleColor.Gray;
-
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.BackgroundColor = System.ConsoleColor.DarkGray;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("  a b c d e f g h ");
-            
 
+            Console.WriteLine();
+            Console.BackgroundColor = color_defaultbackground;
+            Console.ForegroundColor = color_defaultforeground;
+
+        }
+
+        public static PosicaoXadrez lerPosicaoXadrez()
+        {
+            string s = Console.ReadLine();
+            char coluna = s[0];
+            int linha = int.Parse(s[1] + "");
+            return new PosicaoXadrez(coluna, linha);
         }
 
         public static void imprimirPeca(Peca peca, string outro = "")
@@ -54,12 +70,11 @@ namespace ChessConsoleGame
                 }
                 else if (peca.cor == Cor.Preta)
                 {
-                    //ConsoleColor aux = Console.ForegroundColor;
+
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.Write(peca);
 
-                    //Console.ForegroundColor = aux;
                 }
             }
             else

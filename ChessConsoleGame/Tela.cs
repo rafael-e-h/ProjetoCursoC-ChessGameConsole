@@ -12,6 +12,40 @@ namespace ChessConsoleGame
 {
     class Tela
     {
+
+        public static void imprimirPartida(PartidaDeXadrez partida)
+        {
+            imprimirTabuleiro(partida.tab);
+            Console.WriteLine();
+            imprimirPecasCapturadas(partida);
+            Console.WriteLine();
+            Console.WriteLine("Turno: " + partida.turno);
+            Console.WriteLine("Aguardando jogada: " + partida.jogadorAtual);
+        }
+
+
+        public static void imprimirPecasCapturadas(PartidaDeXadrez partida)
+        {
+            Console.WriteLine("Peças capturadas: ");
+            Console.Write("Brancas: ");
+            imprimirConjunto(partida.pecasCapturadas(Cor.Branca));
+            Console.WriteLine();
+            Console.Write("Pretas: ");
+            imprimirConjunto(partida.pecasCapturadas(Cor.Preta));
+            Console.WriteLine();
+        }
+
+
+        public static void imprimirConjunto(HashSet<Peca> conjunto)
+        {
+            Console.Write("[");
+            foreach(Peca x in conjunto){
+                Console.Write(x + " ");
+            }
+            Console.Write("]");
+        }
+
+
         public static void imprimirTabuleiro(Tabuleiro tab)
         {
            ConsoleColor color_defaultforeground = System.Console.ForegroundColor;
@@ -125,21 +159,28 @@ namespace ChessConsoleGame
 
         public static void imprimirPeca(Peca peca, ConsoleColor customColor)
         {
-            if (customColor != null && peca == null) {
-               Console.BackgroundColor = customColor;
-               Console.Write("- ");
-            }
-            else if (peca == null)
+
+            if (peca == null)
             {    
-               Console.ForegroundColor = ConsoleColor.Black;
-               Console.BackgroundColor = ConsoleColor.DarkYellow;
-               Console.Write("- ");
+                if (customColor != null)
+                {
+                    Console.BackgroundColor = customColor;
+                } else
+                {
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.DarkYellow;
+                }
+                Console.Write("- ");
             }
             else
             {
                 if (peca != null)
                 {
-                    if (peca.cor == Cor.Branca)
+                    if (customColor != null)
+                    {
+                        Console.BackgroundColor = customColor;
+                    }
+                    else if (peca.cor == Cor.Branca)
                     {
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.White;

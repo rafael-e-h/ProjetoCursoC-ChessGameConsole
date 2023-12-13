@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using ChessConsoleGame.tabuleiro;
@@ -14,6 +15,7 @@ namespace ChessConsoleGame.xadrez
         public bool terminada { get; private set; }
         private HashSet<Peca> pecas;
         private HashSet<Peca> capturadas;
+        public bool xeque { get; private set; }
 
         public PartidaDeXadrez()
         {
@@ -21,14 +23,13 @@ namespace ChessConsoleGame.xadrez
             turno = 1;
             jogadorAtual = Cor.Branca;
             terminada = false;
+            xeque = false;
             pecas = new HashSet<Peca>();
             capturadas = new HashSet<Peca>();
             colocarPecas();
         }
 
-
-
-        public void executeMovimento(Posicao origem, Posicao destino)
+        public Peca executeMovimento(Posicao origem, Posicao destino)
         {
             Peca p = tab.retirarPeca(origem);
             p.incrementarQteMovimentos();
@@ -38,14 +39,46 @@ namespace ChessConsoleGame.xadrez
             {
                 capturadas.Add(pecaCapturada);
             }
+
+            return pecaCapturada;
+        }
+
+        public void desfazMovimento(Posicao origem, Posicao destino, Peca pecaCapturada)
+        {
+            Peca p = tab.retirarPeca(destino);
+            p.decrementarQteMovimentos();
+            if (pecaCapturada != null)
+            {
+                tab.colocarPeca(pecaCapturada, destino);
+                capturadas.Remove(pecaCapturada);
+            }
+            tab.colocarPeca(p, origem);
         }
 
         public void realizaJogada(Posicao origem, Posicao destino)
         {
-            executeMovimento(origem, destino);
+            Peca pecaCapturada = executeMovimento(origem, destino);
+
+            if (estaEmXeque(jogadorAtual))
+            {
+                desfazMovimento(origem, destino, pecaCapturada);
+                throw new TabuleiroException("Você não pode se colocar em xeque!");
+            }
+
+            if (estaEmXeque(adversaria(jogadorAtual)))
+            {
+                xeque = true;
+            }
+            else
+            {
+                xeque = false;
+            }
+
             turno++;
             mudaJogador();
         }
+
+       
 
         public void validarPosicaoDeOrigem(Posicao pos)
         {
@@ -100,7 +133,7 @@ namespace ChessConsoleGame.xadrez
         public HashSet<Peca> pecasEmJogo(Cor cor)
         {
             HashSet<Peca> aux = new HashSet<Peca>();
-            foreach (Peca x in capturadas)
+            foreach (Peca x in pecas)
             {
                 if (x.cor == cor)
                 {
@@ -110,6 +143,54 @@ namespace ChessConsoleGame.xadrez
             aux.ExceptWith(pecasCapturadas(cor));
             return aux;
         }
+
+        private Cor adversaria(Cor cor)
+        {
+            if(cor == Cor.Branca)
+            {
+                return Cor.Preta;
+            }
+            else
+            {
+                return Cor.Branca;
+            }
+        }
+
+        private Peca rei(Cor cor)
+        {
+            foreach (Peca x in pecasEmJogo(cor))
+            {
+                Console.Write(x);
+
+                if (x is Rei)
+                {
+                    return x;
+                }
+            }
+
+            return null;
+        }
+
+        public bool estaEmXeque(Cor cor)
+        {
+            Peca R = rei(cor);
+            Console.WriteLine("cor: " + cor + " R" + R );
+            if(R == null)
+            {
+                throw new TabuleiroException("Não tem rei da cor " + cor + " no tabuleiro!");
+            }
+
+            foreach (Peca X in pecasEmJogo(adversaria(cor)))
+            {
+                bool[,] mat = X.movimentosPossiveis();
+                if (mat[R.posicao.linha, R.posicao.coluna])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         public void colocarNovaPeca(char coluna, int linha, Peca peca)
         {

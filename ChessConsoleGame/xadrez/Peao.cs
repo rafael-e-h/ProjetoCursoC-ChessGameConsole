@@ -9,9 +9,12 @@ namespace ChessConsoleGame.xadrez
 {
     class Peao : Peca
     {
-        public Peao(Tabuleiro tab, Cor cor) : base(tab, cor)
-        {
 
+        private PartidaDeXadrez partida;
+
+        public Peao(Tabuleiro tab, Cor cor, PartidaDeXadrez partida) : base(tab, cor)
+        {
+            this.partida = partida;
         }
 
         public override string ToString()
@@ -37,11 +40,11 @@ namespace ChessConsoleGame.xadrez
 
             Posicao pos = new Posicao(0, 0);
 
-            if(cor == Cor.Branca)
+            if (cor == Cor.Branca)
             {
                 //1 movimento para cima
                 pos.definirValores(posicao.linha - 1, posicao.coluna);
-                if(tab.posicaoValida(pos) && livre(pos))
+                if (tab.posicaoValida(pos) && livre(pos))
                 {
                     mat[pos.linha, pos.coluna] = true;
                 }
@@ -53,7 +56,7 @@ namespace ChessConsoleGame.xadrez
                 }
                 //possibilidade de mover em diagonal se houver inimigos
                 pos.definirValores(posicao.linha - 1, posicao.coluna - 1);
-                if(tab.posicaoValida(pos) && existeInimigos(pos))
+                if (tab.posicaoValida(pos) && existeInimigos(pos))
                 {
                     mat[pos.linha, pos.coluna] = true;
 
@@ -64,10 +67,29 @@ namespace ChessConsoleGame.xadrez
                     mat[pos.linha, pos.coluna] = true;
 
                 }
+
+                //#jogadaespecial en passant
+                if (posicao.linha == 3)
+                {
+                    Posicao esquerda = new Posicao(posicao.linha, posicao.coluna - 1);
+                    if (tab.posicaoValida(esquerda) && existeInimigos(esquerda) && tab.peca(esquerda) == partida.vulneravelEnPassant)
+                    {
+                        mat[esquerda.linha - 1, esquerda.coluna] = true;
+                    }
+
+                    Posicao direita = new Posicao(posicao.linha, posicao.coluna + 1);
+                    if (tab.posicaoValida(direita) && existeInimigos(direita) && tab.peca(direita) == partida.vulneravelEnPassant)
+                    {
+                        mat[direita.linha - 1, direita.coluna] = true;
+
+                    }
+
+                }
+
             }
             else
             {
-                //1 movimento para cima
+                //movimento para cima
                 pos.definirValores(posicao.linha + 1, posicao.coluna);
                 if (tab.posicaoValida(pos) && livre(pos))
                 {
@@ -92,10 +114,26 @@ namespace ChessConsoleGame.xadrez
                     mat[pos.linha, pos.coluna] = true;
 
                 }
+
+                //#jogadaespecial en passant
+                if (posicao.linha == 4)
+                {
+                    Posicao esquerda = new Posicao(posicao.linha, posicao.coluna - 1);
+                    if (tab.posicaoValida(esquerda) && existeInimigos(esquerda) && tab.peca(esquerda) == partida.vulneravelEnPassant)
+                    {
+                        mat[esquerda.linha + 1, esquerda.coluna] = true;
+                    }
+
+                    Posicao direita = new Posicao(posicao.linha, posicao.coluna + 1);
+                    if (tab.posicaoValida(direita) && existeInimigos(direita) && tab.peca(direita) == partida.vulneravelEnPassant)
+                    {
+                        mat[direita.linha + 1, direita.coluna] = true;
+
+                    }
+
+                }
             }
-
-
-            return mat;
+                return mat;
         }
     }
 }

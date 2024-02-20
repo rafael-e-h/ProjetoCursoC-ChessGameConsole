@@ -128,9 +128,25 @@ namespace ChessConsoleGame
         public static PosicaoXadrez lerPosicaoXadrez()
         {
             string s = Console.ReadLine();
-            char coluna = s[0];
-            int linha = int.Parse(s[1] + "");
-            return new PosicaoXadrez(coluna, linha);
+
+            if (s.Length >= 2)
+            {
+                char coluna = Char.ToLower(s[0]);
+                char linhachar = Char.ToLower(s[1]);
+           
+                if (int.TryParse(linhachar + "", out var valor)){
+                    int linha = int.Parse(s[1] + "");
+                    return new PosicaoXadrez(coluna, linha);
+                }
+                else {
+                    throw new TabuleiroException("Posicao inválida!");
+                }
+            }
+            else
+            {
+                throw new TabuleiroException("Linha não definida! Por favor use uma letra e um número, exemplo: a2 ou a7");
+            }
+
         }
 
         public static void imprimirPeca(Peca peca)
